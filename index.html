@@ -1,50 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#080808" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-  <title>Hey V — AI Voice Assistant</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#080808"/>
+  <title>Hey V - AI Voice Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; background:#080808; overflow-x:hidden; }
-    #root { min-height:100vh; }
-    ::-webkit-scrollbar { width:3px; }
-    ::-webkit-scrollbar-track { background:#111; }
-    ::-webkit-scrollbar-thumb { background:#222; border-radius:2px; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#080808;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .card{width:100%;max-width:400px;background:#0f0f0f;border:1px solid #1a1a1a;border-radius:24px;padding:24px 20px}
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .logo{color:#fff;font-weight:900;font-size:18px}
+    .logo span{color:#4fffb0}
+    .plan{background:#1a1a1a;color:#4fffb0;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;cursor:pointer}
+    .tabs{display:flex;gap:6px;margin-bottom:20px}
+    .tab{flex:1;background:#141414;border:1px solid #1e1e1e;color:#444;border-radius:12px;padding:10px 4px;font-size:16px;cursor:pointer;font-family:'Outfit',sans-serif}
+    .tab.active{background:#1a1a1a;border-color:#2a2a2a;color:#fff}
+    .orb-wrap{display:flex;justify-content:center;margin:8px 0 20px}
+    .orb{width:100px;height:100px;border-radius:50%;background:#111;border:2px solid #252525;display:flex;align-items:center;justify-content:center;transition:all 0.4s;position:relative}
+    .orb.awake{border-color:#4fffb0;box-shadow:0 0 40px #4fffb055}
+    .orb.processing{border-color:#ffd166;box-shadow:0 0 40px #ffd16655}
+    .wave{display:flex;align-items:center;gap:2px;height:30px}
+    .wave-bar{width:3px;background:#252525;border-radius:2px;transition:all 0.15s}
+    .orb.awake .wave-bar{background:#4fffb0}
+    .orb.processing .wave-bar{background:#ffd166}
+    .status{text-align:center;color:#333;font-size:13px;font-weight:700;margin-bottom:16px;min-height:20px}
+    .status.awake{color:#4fffb0}
+    .status.processing{color:#ffd166}
+    .ptt-wrap{display:flex;flex-direction:column;align-items:center;margin:8px 0 16px}
+    .ptt{width:72px;height:72px;border-radius:50%;background:#141414;border:2px solid #2a2a2a;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;font-size:28px;transition:all 0.2s}
+    .ptt.active{background:#0d1f17;border-color:#4fffb0;box-shadow:0 0 30px #4fffb055}
+    .ptt-label{color:#333;font-size:11px;margin-top:8px;font-weight:700;letter-spacing:1px}
+    .hint-box{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:12px;padding:12px;margin-top:4px}
+    .hint-title{color:#222;font-size:9px;letter-spacing:2px;margin-bottom:8px}
+    .hints{display:flex;flex-wrap:wrap;gap:6px}
+    .hint{background:#141414;border:1px solid #1e1e1e;color:#2e2e2e;border-radius:99px;padding:5px 11px;font-size:10px;cursor:pointer}
+    .call-card{background:#0d1a14;border:1px solid #1a3326;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .call-info{flex:1}
+    .call-name{color:#fff;font-weight:800}
+    .call-timer{color:#4fffb0;font-family:monospace;font-size:13px}
+    .end-btn{background:#ff3b3b;color:#fff;border:none;border-radius:99px;padding:8px 16px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif}
+    .music-card{background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .music-info{flex:1;min-width:0}
+    .music-title{color:#fff;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .music-artist{color:#555;font-size:11px}
+    .music-controls{display:flex;gap:5px;flex-shrink:0}
+    .icon-btn{background:#1a1a1a;border:1px solid #222;color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif}
+    .green-btn{background:#4fffb0;color:#000;border:none;border-radius:10px;padding:9px 16px;font-weight:800;cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif}
+    .log{margin-top:12px;padding-top:12px;border-top:1px solid #161616}
+    .log-item{display:flex;justify-content:space-between;font-size:11px;color:#2a2a2a;padding:2px 0}
+    .contact-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#141414;border-radius:12px;margin-bottom:7px;border:1px solid #1e1e1e}
+    .avatar{width:36px;height:36px;border-radius:50%;background:#1e1e1e;color:#4fffb0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
+    .contact-info{flex:1}
+    .contact-name{color:#fff;font-weight:700;font-size:14px}
+    .contact-phone{color:#333;font-size:11px}
+    .wa-badge{background:#0d2e1f;color:#4fffb0;font-size:9px;font-weight:800;padding:3px 7px;border-radius:6px;border:1px solid #1a3326}
+    .msg-item{background:#141414;border:1px solid #1e1e1e;border-radius:11px;padding:9px 12px;margin-bottom:7px}
+    .msg-header{display:flex;justify-content:space-between;margin-bottom:3px}
+    .msg-to{font-weight:700;font-size:11px}
+    .msg-time{color:#333;font-size:10px}
+    .msg-text{color:#bbb;font-size:13px}
+    .plan-card{background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:14px;margin-bottom:10px;transition:all 0.3s}
+    .plan-card.active{border-color:#4fffb0;background:#0c1a10}
+    .plan-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+    .plan-name{color:#fff;font-weight:900}
+    .plan-price{font-size:20px;font-weight:900}
+    .plan-perk{display:flex;gap:7px;font-size:12px;color:#555;margin-bottom:3px}
+    .active-badge{background:#0d2e1f;color:#4fffb0;font-size:10px;font-weight:800;padding:5px 12px;border-radius:99px;border:1px solid #1a3326}
+    .bottom-nav{display:flex;background:#0f0f0f;border-top:1px solid #1a1a1a;border-radius:0 0 24px 24px;overflow:hidden;margin:16px -20px -24px}
+    .nav-btn{flex:1;background:none;border:none;color:#333;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;cursor:pointer;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;gap:1px}
+    .nav-btn.active{color:#4fffb0}
+    .nav-icon{font-size:18px}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;align-items:flex-end;justify-content:center;z-index:100;padding:0}
+    .modal{background:#141414;border:1px solid #2a2a2a;border-radius:22px 22px 0 0;padding:24px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .modal-title{color:#fff;font-weight:900;font-size:16px}
+    .input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:11px 13px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:'Outfit',sans-serif;box-sizing:border-box}
+    .section-title{color:#fff;font-weight:900;font-size:18px;margin-bottom:14px}
+    .perm-banner{background:#1a0a00;border:1px solid #ff6b2244;border-radius:12px;padding:14px;margin-bottom:12px;text-align:center}
+    .offline-banner{background:#1a1000;border:1px solid #ffd16644;border-radius:10px;padding:10px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+    .transcript-box{background:#141414;border:1px solid #1e1e1e;border-radius:12px;padding:10px 14px;margin-bottom:10px;text-align:center}
+    .lang-select{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:8px 10px;color:#888;font-size:12px;outline:none;font-family:'Outfit',sans-serif}
+    .manual-row{display:flex;gap:8px;margin-bottom:12px}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+    .spinning{animation:spin 3s linear infinite}
   </style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel" data-presets="react,env">
-import { useState, useEffect, useRef, useCallback } from "react";
+<div class="card" id="app">
+  <div class="top">
+    <div class="logo">Hey <span>V</span></div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <div class="plan" id="planBadge" onclick="showTab('upgrade')">FREE</div>
+      <button class="icon-btn" style="font-size:15px" onclick="showSettings()">⚙️</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('home')" id="tab-home">🏠</button>
+    <button class="tab" onclick="showTab('contacts')" id="tab-contacts">👥</button>
+    <button class="tab" onclick="showTab('messages')" id="tab-messages">💬</button>
+    <button class="tab" onclick="showTab('upgrade')" id="tab-upgrade">⭐</button>
+  </div>
+  <div id="home-tab">
+    <div id="offlineBanner" class="offline-banner" style="display:none">⚠️ <span style="color:#ffd166;font-size:12px">You are offline</span></div>
+    <div id="permBanner" class="perm-banner" style="display:none">
+      <div style="font-size:24px;margin-bottom:6px">🎤</div>
+      <div style="color:#ff9966;font-size:13px;font-weight:700;margin-bottom:6px">Microphone access needed</div>
+      <button class="green-btn" style="width:100%" onclick="requestMic()">Allow Microphone</button>
+    </div>
+    <div class="orb-wrap">
+      <div class="orb" id="orb">
+        <div class="wave" id="wave"></div>
+      </div>
+    </div>
+    <div id="aiIndicator" style="display:none;text-align:center;margin-bottom:10px;color:#ffd166;font-size:11px;animation:pulse 1s infinite">AI thinking...</div>
+    <div class="status" id="status">Say "HEY V" to activate</div>
+    <div id="transcriptBox" class="transcript-box" style="display:none">
+      <div style="color:#4fffb0;font-size:11px;letter-spacing:2px;margin-bottom:4px">HEARING</div>
+      <div id="transcriptText" style="color:#fff;font-size:14px;font-style:italic"></div>
+    </div>
+    <div id="callCard" style="display:none" class="call-card">
+      <span style="font-size:20px">📞</span>
+      <div class="call-info">
+        <div class="call-name" id="callName"></div>
+        <div class="call-timer" id="callTimer">00:00</div>
+      </div>
+      <button class="end-btn" onclick="endCall()">End</button>
+    </div>
+    <div id="musicCard" style="display:none" class="music-card">
+      <div id="musicIcon" style="font-size:20px">🎵</div>
+      <div class="music-info">
+        <div class="music-title" id="musicTitle"></div>
+        <div class="music-artist" id="musicArtist"></div>
+      </div>
+      <div class="music-controls">
+        <button class="icon-btn" onclick="prevSong()">⏮</button>
+        <button class="icon-btn" id="playBtn" onclick="toggleMusic()">⏸</button>
+        <button class="icon-btn" onclick="nextSong()">⏭</button>
+      </div>
+    </div>
+    <div class="ptt-wrap">
+      <div class="ptt" id="pttBtn" onmousedown="startPTT()" onmouseup="stopPTT()" ontouchstart="startPTT();event.preventDefault()" ontouchend="stopPTT()">🎤</div>
+      <div class="ptt-label" id="pttLabel">HOLD TO SPEAK</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select class="lang-select" id="langSelect">
+        <option value="en-US">🇺🇸 English US</option>
+        <option value="en-GB">🇬🇧 English UK</option>
+        <option value="en-ZA">🇿🇦 English SA</option>
+        <option value="fr-FR">🇫🇷 French</option>
+        <option value="es-ES">🇪🇸 Spanish</option>
+        <option value="pt-BR">🇧🇷 Portuguese</option>
+        <option value="sw-KE">🇰🇪 Swahili</option>
+        <option value="ar-SA">🇸🇦 Arabic</option>
+        <option value="hi-IN">🇮🇳 Hindi</option>
+        <option value="zh-CN">🇨🇳 Chinese</option>
+      </select>
+      <button class="icon-btn" style="width:auto;border-radius:10px;padding:0 12px;font-size:16px" onclick="toggleManual()">⌨️</button>
+    </div>
+    <div id="manualRow" class="manual-row" style="display:none">
+      <input class="input" id="manualInput" style="margin-bottom:0;flex:1" placeholder='Type a command e.g. "call Mom"' onkeydown="if(event.key==='Enter')sendManual()"/>
+      <button class="green-btn" onclick="sendManual()">Send</button>
+    </div>
+    <div class="hint-box">
+      <div class="hint-title">VOICE COMMANDS</div>
+      <div class="hints" id="hints"></div>
+    </div>
+    <div id="logDiv"></div>
+  </div>
+  <div id="contacts-tab" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="section-title">Contacts</div>
+      <button class="green-btn" onclick="openAddContact()">+ Add</button>
+    </div>
+    <div id="contactsList"></div>
+  </div>
+  <div id="messages-tab" style="display:none">
+    <div class="section-title">Messages</div>
+    <div id="msgList"></div>
+  </div>
+  <div id="upgrade-tab" style="display:none">
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="section-title">Choose Your Plan</div>
+      <p style="color:#333;font-size:12px;margin-top:4px">Cancel anytime • 7-day free trial</p>
+    </div>
+    <div id="plansList"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-home" onclick="showTab('home')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" id="nav-contacts" onclick="showTab('contacts')"><span class="nav-icon">👥</span>Contacts</button>
+    <button class="nav-btn" id="nav-messages" onclick="showTab('messages')"><span class="nav-icon">💬</span>Messages</button>
+    <button class="nav-btn" id="nav-upgrade" onclick="showTab('upgrade')"><span class="nav-icon">⭐</span>Upgrade</button>
+  </div>
+</div>
 
-// ── Backend URL — change this to your Vercel URL after deploying ──
-const API_URL = "https://your-app.vercel.app";  // e.g. https://heyv.vercel.app
+<div id="settingsModal" class="overlay" style="display:none" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Settings</span><button class="icon-btn" onclick="closeSettings()">✕</button></div>
+    <div style="color:#444;font-size:10px;letter-spacing:2px;margin-bottom:6px">WAKE WORD</div>
+    <input class="input" id="wakeWordInput" placeholder="hey v"/>
+    <div style="color:#2a2a2a;font-size:11px;margin-bottom:16px">Phrase that wakes the assistant</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="color:#777;font-size:13px">Voice feedback</span>
+      <div id="voiceToggle" onclick="toggleVoiceFb()" style="width:42px;height:24px;border-radius:99px;background:#0d2e1f;border:1px solid #4fffb0;position:relative;cursor:pointer">
+        <div id="voiceKnob" style="width:18px;height:18px;border-radius:50%;background:#4fffb0;position:absolute;top:2px;left:21px;transition:left 0.3s"></div>
+      </div>
+    </div>
+    <button class="green-btn" style="width:100%" onclick="saveSettings()">Save Settings</button>
+    <button onclick="logout()" style="width:100%;margin-top:10px;background:none;border:1px solid #2a2a2a;border-radius:10px;padding:11px;color:#555;font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif">🚪 Log Out</button>
+  </div>
+</div>
 
-// ═══════════════════════════════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════════════════════════════
-const FLW_KEY_STORAGE  = "heyv_flw_key";
-const APP_STORAGE      = "heyv_app_v3";
-const AUTH_STORAGE     = "heyv_auth_v1";
-const USERS_STORAGE    = "heyv_users_v1";
+<div id="payModal" class="overlay" style="display:none" onclick="if(event.target===this)closePayModal()">
+  <div class="modal" id="payModalContent"></div>
+</div>
 
-// ═══════════════════════════════════════════════════════════════
-// CRYPTO — password hashing using Web Crypto API
-// ═══════════════════════════════════════════════════════════════
-async function hashPassword(password) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password + "heyv_salt_2025");
-  const hash = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
+<div id="contactModal" class="overlay" style="display:none" onclick="if(event.target===this)closeContactModal()">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title" id="contactModalTitle">Add Contact</span><button class="icon-btn" onclick="closeContactModal()">✕</button></div>
+    <input class="input" id="cName" placeholder="Name *"/>
+    <input class="input" id="cPhone" placeholder="Phone with country code e.g. 2769123803 *"/>
+    <label style="display:flex;align-items:center;gap:8px;color:#666;font-size:13px;margin:4px 0 16px;cursor:pointer">
+      <input type="checkbox" id="cWa" checked/> Has WhatsApp
+    </label>
+    <div style="display:flex;gap:8px">
+      <button class="green-btn" style="flex:1" onclick="saveContact()">Save</button>
+      <button class="icon-btn" style="flex:1;width:auto;border-radius:10px;color:#555;font-size:13px" onclick="closeContactModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+const SONGS = [
+  {title:"Chill Vibes",artist:"Lo-Fi Lab",freq:220},
+  {title:"Focus Mode",artist:"Study Beats",freq:264},
+  {title:"Night Drive",artist:"Synthwave Co",freq:330},
+  {title:"Morning Energy",artist:"Boost FM",freq:396},
+  {title:"Deep Work",artist:"Flow State",freq:174}
+];
+const PLANS = [
+  {name:"Free",price:0,tag:"FREE",color:"#555",perks:["3 contacts","Basic commands","In-app messages"]},
+  {name:"Pro",price:14,tag:"$14/mo",color:"#4fffb0",perks:["Unlimited contacts","WhatsApp voice","Music control","Custom wake word","AI commands","Voice feedback"]},
+  {name:"Elite",price:29,tag:"$29/mo",color:"#ffd166",perks:["Everything in Pro","Priority support","Early features","Multi-language"]}
+];
+
+// ── STATE ──
+let state = {
+  contacts:[
+    {id:1,name:"Mom",phone:"1234567890",wa:true},
+    {id:2,name:"Dad",phone:"1234567891",wa:true},
+    {id:3,name:"James",phone:"1234567892",wa:true},
+    {id:4,name:"Sarah",phone:"1234567893",wa:false}
+  ],
+  messages:[],waMessages:[],
+  plan:"Free",wakeWord:"hey v",voiceFb:true,
+  songIdx:0,playing:false,
+  activeCall:null,callSecs:0,
+  phase:"idle",log:[],
+  editingContactIdx:null
+};
+
+let callInterval=null, waveInterval=null;
+let recRef=null, pttRecRef=null;
+const phaseRef={v:"idle"};
+let audioCtx=null, oscNodes=[];
+
+// ── STORAGE ──
+function saveState(){try{localStorage.setItem("heyv_state",JSON.stringify(state));}catch{}}
+function loadState(){try{const d=localStorage.getItem("heyv_state");if(d){const p=JSON.parse(d);Object.assign(state,p);}}catch{}}
+
+// ── AUDIO ──
+function getCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function beep(f=440,d=0.15,v=0.3){try{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(v,c.currentTime+0.01);g.gain.linearRampToValueAtTime(0,c.currentTime+d);o.start(c.currentTime);o.stop(c.currentTime+d);}catch{}}
+function playSong(f){stopSong();try{const c=getCtx(),o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type="triangle";o.frequency.value=f;fl.type="lowpass";fl.frequency.value=900;g.gain.value=0.1;o.connect(fl);fl.connect(g);g.connect(c.destination);o.start();oscNodes=[o,g,fl];}catch{}}
+function stopSong(){oscNodes.forEach(n=>{try{n.disconnect();if(n.stop)n.stop();}catch{}});oscNodes=[];}
+function wakeSound(){beep(660,0.08);setTimeout(()=>beep(880,0.1),110);}
+function confirmSound(){[440,550,660].forEach((f,i)=>setTimeout(()=>beep(f,0.09),i*90));}
+function successSound(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,0.12),i*100));}
+
+// ── SPEECH ──
+function speak(t){if(!state.voiceFb)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.rate=1.05;u.pitch=1.1;window.speechSynthesis.speak(u);}catch{}}
+
+// ── WAVE ──
+function startWave(){waveInterval=setInterval(()=>{const bars=document.querySelectorAll(".wave-bar");bars.forEach(b=>{const h=phaseRef.v!=="idle"?Math.floor(Math.random()*10)+2:1;b.style.height=h*3+"px";});},130);}
+
+// ── INIT ──
+function initWaveBars(){const w=document.getElementById("wave");w.innerHTML="";for(let i=0;i<13;i++){const b=document.createElement("div");b.className="wave-bar";b.style.height="4px";w.appendChild(b);}}
+function setPhase(p){phaseRef.v=p;state.phase=p;const orb=document.getElementById("orb");const st=document.getElementById("status");orb.className="orb"+(p!=="idle"?" "+p:"");if(p==="idle"){st.className="status";st.textContent='Say "'+state.wakeWord.toUpperCase()+'" to activate';}else if(p==="awake"){st.className="status awake";st.textContent="I'm listening...";}else{st.className="status processing";}}
+function setStatus(t){const s=document.getElementById("status");s.textContent=t;}
+function addLog(msg){state.log.unshift({text:msg,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-d  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,"0")).join("");
 }
 
 // ═══════════════════════════════════════════════════════════════
