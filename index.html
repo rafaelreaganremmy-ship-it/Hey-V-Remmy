@@ -1,40 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#080808"/>
-  <title>Hey V - AI Voice Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet"/>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{background:#080808;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-    .card{width:100%;max-width:400px;background:#0f0f0f;border:1px solid #1a1a1a;border-radius:24px;padding:24px 20px}
-    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-    .logo{color:#fff;font-weight:900;font-size:18px}
-    .logo span{color:#4fffb0}
-    .plan{background:#1a1a1a;color:#4fffb0;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;cursor:pointer}
-    .tabs{display:flex;gap:6px;margin-bottom:20px}
-    .tab{flex:1;background:#141414;border:1px solid #1e1e1e;color:#444;border-radius:12px;padding:10px 4px;font-size:16px;cursor:pointer;font-family:'Outfit',sans-serif}
-    .tab.active{background:#1a1a1a;border-color:#2a2a2a;color:#fff}
-    .orb-wrap{display:flex;justify-content:center;margin:8px 0 20px}
-    .orb{width:100px;height:100px;border-radius:50%;background:#111;border:2px solid #252525;display:flex;align-items:center;justify-content:center;transition:all 0.4s;position:relative}
-    .orb.awake{border-color:#4fffb0;box-shadow:0 0 40px #4fffb055}
-    .orb.processing{border-color:#ffd166;box-shadow:0 0 40px #ffd16655}
-    .wave{display:flex;align-items:center;gap:2px;height:30px}
-    .wave-bar{width:3px;background:#252525;border-radius:2px;transition:all 0.15s}
-    .orb.awake .wave-bar{background:#4fffb0}
-    .orb.processing .wave-bar{background:#ffd166}
-    .status{text-align:center;color:#333;font-size:13px;font-weight:700;margin-bottom:16px;min-height:20px}
-    .status.awake{color:#4fffb0}
-    .status.processing{color:#ffd166}
-    .ptt-wrap{display:flex;flex-direction:column;align-items:center;margin:8px 0 16px}
-    .ptt{width:72px;height:72px;border-radius:50%;background:#141414;border:2px solid #2a2a2a;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;font-size:28px;transition:all 0.2s}
-    .ptt.active{background:#0d1f17;border-color:#4fffb0;box-shadow:0 0 30px #4fffb055}
-    .ptt-label{color:#333;font-size:11px;margin-top:8px;font-weight:700;letter-spacing:1px}
-    .hint-box{background:#0d0d0d;border:1px solid #1a1a1a;border-radius:12px;padding:12px;margin-top:4px}
-    .hint-title{color:#222;font-size:9px;letter-spacing:2px;margin-bottom:8px}
-    .hints{display:flex;flex-wrap:wrap;gap:6px}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+<meta name="theme-color" content="#080808"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<title>Hey V - AI Voice Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#080808;font-family:'Outfit',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{width:100%;max-width:400px;background:#0f0f0f;border:1px solid #1a1a1a;border-radius:24px;padding:22px 18px 80px;position:relative;min-height:500px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.logo{color:#fff;font-weight:900;font-size:18px;letter-spacing:-0.5px}
+.logo span{color:#4fffb0}
+.plan-badge{background:#1a1a1a;color:#444;font-size:10px;font-weight:800;padding:4px 10px;border-radius:99px;cursor:pointer;border:1px solid #222;letter-spacing:1px}
+.plan-badge.pro{background:#0d2e1f;color:#4fffb0;border-color:#1a3326}
+.tabs{display:flex;gap:5px;margin-bottom:18px}
+.tab{flex:1;background:#141414;border:1px solid #1e1e1e;color:#444;border-radius:12px;padding:9px 4px;font-size:16px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all 0.2s}
+.tab.on{background:#1a1a1a;border-color:#2a2a2a;color:#fff}
+.orb-wrap{display:flex;justify-content:center;margin:4px 0 16px}
+.orb{width:96px;height:96px;border-radius:50%;background:#111;border:2px solid #222;display:flex;align-items:center;justify-content:center;transition:all 0.4s;position:relative}
+.orb.awake{border-color:#4fffb0;box-shadow:0 0 40px #4fffb055}
+.orb.proc{border-color:#ffd166;box-shadow:0 0 40px #ffd16655}
+.wave{display:flex;align-items:center;gap:2px;height:28px}
+.wb{width:3px;height:4px;border-radius:2px;transition:height 0.13s}
+.status{text-align:center;font-size:13px;font-weight:700;color:#333;margin-bottom:14px;min-height:18px}
+.status.a{color:#4fffb0}
+.status.p{color:#ffd166}
+.transcript{background:#141414;border:1px solid #1e1e1e;border-radius:12px;padding:10px 14px;margin-bottom:10px;text-align:center;display:none}
+.transcript-label{color:#4fffb0;font-size:10px;letter-spacing:2px;margin-bottom:4px}
+.transcript-text{color:#fff;font-size:14px;font-style:italic}
+.call-card{background:#0d1a14;border:1px solid #1a3326;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.music-card{background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ptt-wrap{display:flex;flex-direction:column;align-items:center;margin:6px 0 14px}
+.ptt{width:70px;height:70px;border-radius:50%;background:#141414;border:2px solid #2a2a2a;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;font-size:26px;transition:all 0.2s;touch-action:none}
+.ptt.on{background:#0d1f17;border-color:#4fffb0;box-shadow:0 0 28px #4fffb055}
+.ptt-label{color:#333;font-size:11px;margin-top:8px;font-weight:700;letter-spacing:1px}
+.hint-box{background:#0d0d0d;border:1px solid #181818;border-radius:12px;padding:12px;margin-top:4px}
+.hint-label{color:#1e1e1e;font-size:9px;letter-spacing:2px;margin-bottom:8px}
+.hints{display:flex;flex-wrap:wrap;gap:5px}
+.hint{background:#141414;border:1px solid #1e1e1e;color:#2e2e2e;border-radius:99px;padding:5px 10px;font-size:10px;cursor:pointer;transition:all 0.2s}
+.hint:active{background:#1e1e1e;color:#4fffb0}
+.log-wrap{margin-top:12px;padding-top:12px;border-top:1px solid #161616}
+.log-item{display:flex;justify-content:space-between;font-size:11px;color:#2a2a2a;padding:2px 0}
+.contact-row{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#141414;border-radius:12px;margin-bottom:7px;border:1px solid #1e1e1e}
+.avatar{width:36px;height:36px;border-radius:50%;background:#1e1e1e;color:#4fffb0;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
+.wa-badge{background:#0d2e1f;color:#4fffb0;font-size:9px;font-weight:800;padding:3px 7px;border-radius:6px;border:1px solid #1a3326}
+.msg-item{background:#141414;border:1px solid #1e1e1e;border-radius:11px;padding:9px 12px;margin-bottom:7px}
+.plan-card{background:#141414;border:1px solid #1e1e1e;border-radius:14px;padding:14px;margin-bottom:10px;transition:all 0.3s}
+.plan-card.on{border-color:#4fffb0;background:#0c1a10}
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;display:flex;background:#0f0f0f;border-top:1px solid #1a1a1a;border-radius:0 0 24px 24px;overflow:hidden}
+.nav-btn{flex:1;background:none;border:none;color:#333;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 0;cursor:pointer;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;gap:1px;transition:color 0.2s}
+.nav-btn.on{color:#4fffb0}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
+.modal{background:#141414;border:1px solid #2a2a2a;border-radius:22px 22px 0 0;padding:24px;width:100%;max-width:480px;max-height:88vh;overflow-y:auto}
+.modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-title{color:#fff;font-weight:900;font-size:16px}
+.inp{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:11px 13px;color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:'Outfit',sans-serif;box-sizing:border-box}
+.inp:focus{border-color:#4fffb055}
+.gbtn{background:#4fffb0;color:#000;border:none;border-radius:10px;padding:9px 16px;font-weight:800;cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif;transition:all 0.2s}
+.gbtn:active{transform:scale(0.96)}
+.ibtn{background:#1a1a1a;border:1px solid #222;color:#fff;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:13px;font-family:'Outfit',sans-serif;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}
+.sec-title{color:#fff;font-weight:900;font-size:18px;margin-bottom:14px}
+.lang-sel{flex:1;background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:8px 10px;color:#888;font-size:12px;outline:none;font-family:'Outfit',sans-serif}
+.manual-row{display:flex;gap:8px;margin-bottom:12px}
+.err-box{background:#1a0505;border:1px solid #ff3b3b33;border-radius:10px;padding:10px 12px;color:#ff6b6b;font-size:13px;margin-bottom:14px}
+.ok-box{background:#0a1a0d;border:1px solid #4fffb033;border-radius:10px;padding:10px 12px;color:#4fffb0;font-size:13px;margin-bottom:14px}
+.toggle-wrap{width:42px;height:24px;border-radius:99px;position:relative;cursor:pointer;transition:all 0.3s;flex-shrink:0}
+.toggle-knob{width:18px;height:18px;border-radius:50%;position:absolute;top:2px;transition:left 0.3s}
+.mic-banner{background:#0d1f17;border:1px solid #1a3326;border-radius:14px;padding:16px;text-align:center;margin-bottom:14px}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes orbring{0%{transform:scale(0.95);opacity:0.4}100%{transform:scale(1.7);opacity:0}}
+.ring{position:absolute;width:96px;height:96px;border-radius:50%;border:1px solid;pointer-events:none;animation:orbring 2.2s ease-out infinite}
+.spinning{animation:spin 3s linear infinite}
+.ai-dot{animation:pulse 0.8s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <div class="top">
+    <div class="logo">Hey <span>V</span></div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <div class="plan-badge" id="planBadge" onclick="showTab('upgrade')">FREE</div>
+      <button class="ibtn" style="font-size:15px" onclick="openSettings()">⚙️</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="t-home" onclick="showTab('home')">🏠</button>
+    <button class="tab" id="t-contacts" onclick="showTab('contacts')">👥</button>
+    <button class="tab" id="t-messages" onclick="showTab('messages')">💬</button>
+    <button class="tab" id="t-upgrade" onclick="showTab('upgrade')">⭐</button>
+  </div>
+
+  <!-- HOME -->
+  <div id="tab-home">
+    <div id="micBanner" class="mic-banner">
+      <div style="font-size:32px;margin-bottom:8px">🎤</div>
+      <div style="color:#4fffb0;font-weight:800;font-size:14px;margin-bottom:6px">Enable Microphone</div>
+      <div style="color:#555;font-size:12px;margin-bottom:12px">Tap below to allow voice commands</div>
+      <button class="gbtn" style="width:100%;padding:12px;font-size:14px" onclick="enableMic()">Allow Microphone Access</button>
+    </div>
+    <div class="orb-wrap" id="orbWrap" style="display:none">
+      <div class="orb" id="orb">
+        <div class="wave" id="wave"></div>
+      </div>
+    </div>
+    <div id="aiRow" style="display:none;text-align:center;margin-bottom:8px">
+      <span style="color:#ffd166;font-size:11px;letter-spacing:1px" class="ai-dot">● AI thinking...</span>
+    </div>
+    <div class="status" id="status" style="display:none">Say "HEY V" to activate</div>
+    <div class="transcript" id="transcript">
+      <div class="transcript-label">HEARING</div>
+      <div class="transcript-text" id="transcriptText"></div>
+    </div>
+    <div class="call-card" id="callCard" style="display:none">
+      <span style="font-size:20px">📞</span>
+      <div style="flex:1"><div style="color:#fff;font-weight:800" id="callName"></div><div style="color:#4fffb0;font-family:monospace;font-size:13px" id="callTimer">00:00</div></div>
+      <button class="gbtn" style="background:#ff3b3b" onclick="endCall()">End</button>
+    </div>
+    <div class="music-card" id="musicCard" style="display:none">
+      <div style="font-size:20px" id="musicIcon">🎵</div>
+      <div style="flex:1;min-width:0"><div style="color:#fff;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="musicTitle"></div><div style="color:#555;font-size:11px" id="musicArtist"></div></div>
+      <div style="display:flex;gap:5px;flex-shrink:0">
+        <button class="ibtn" onclick="prevSong()">⏮</button>
+        <button class="ibtn" id="playBtn" onclick="togglePlay()">⏸</button>
+        <button class="ibtn" onclick="nextSong()">⏭</button>
+      </div>
+    </div>
+    <div class="ptt-wrap" id="pttWrap" style="display:none">
+      <div class="ptt" id="ptt" onmousedown="pttStart(event)" onmouseup="pttStop()" onmouseleave="pttStop()" ontouchstart="pttStart(event)" ontouchend="pttStop()" ontouchcancel="pttStop()">🎤</div>
+      <div class="ptt-label" id="pttLabel">HOLD TO SPEAK</div>
+    </div>
+    <div style="display:none;gap:8px;margin-bottom:12px" id="langRow">
+      <select class="lang-sel" id="langSel" onchange="changeLang()">
+        <option value="en-US">🇺🇸 English US</option>
+        <option value="en-GB">🇬🇧 English UK</option>
+        <option value="en-ZA">🇿🇦 English SA</option>
+        <option value="fr-FR">🇫🇷 French</option>
+        <option value="es-ES">🇪🇸 Spanish</option>
+        <option value="pt-BR">🇧🇷 Portuguese</option>
+        <option value="sw-KE">🇰🇪 Swahili</option>
+        <option value="ar-SA">🇸🇦 Arabic</option>
+        <option value="hi-IN">🇮🇳 Hindi</option>
+        <option value="zh-CN">🇨🇳 Chinese</option>
+      </select>
+      <button class="ibtn" style="width:auto;border-radius:10px;padding:0 12px" onclick="toggleManual()">⌨️</button>
+    </div>
+    <div class="manual-row" id="manualRow" style="display:none">
+      <input class="inp" id="manualInp" style="margin-bottom:0;flex:1" placeholder='Type command e.g. "call Mom"' onkeydown="if(event.key==='Enter')sendManual()"/>
+      <button class="gbtn" onclick="sendManual()">Send</button>
+    </div>
+    <div class="hint-box" id="hintBox" style="display:none">
+      <div class="hint-label">VOICE COMMANDS</div>
+      <div class="hints" id="hints"></div>
+    </div>
+    <div id="logWrap"></div>
+  </div>
+
+  <!-- CONTACTS -->
+  <div id="tab-contacts" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="sec-title">Contacts</div>
+      <button class="gbtn" onclick="openAddContact()">+ Add</button>
+    </div>
+    <div id="contactsDiv"></div>
+  </div>
+
+  <!-- MESSAGES -->
+  <div id="tab-messages" style="display:none">
+    <div class="sec-title">Messages</div>
+    <div id="msgsDiv"></div>
+  </div>
+
+  <!-- UPGRADE -->
+  <div id="tab-upgrade" style="display:none">
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="sec-title">Choose Your Plan</div>
+      <p style="color:#333;font-size:12px">7-day free trial • Cancel anytime</p>
+    </div>
+    <div id="plansDiv"></div>
+    <div style="background:#0d0d0d;border:1px solid #1a1a1a;border-radius:12px;padding:12px;margin-top:8px">
+      <div style="color:#222;font-size:9px;letter-spacing:2px;margin-bottom:8px">FLUTTERWAVE KEY</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span id="flwStatus" style="color:#ff6b6b;font-size:12px">⚠ No payment key</span>
+        <button class="gbtn" style="padding:6px 12px;font-size:11px" onclick="openFlwModal()">Add Key</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn on" id="n-home" onclick="showTab('home')"><span style="font-size:18px">🏠</span>Home</button>
+    <button class="nav-btn" id="n-contacts" onclick="showTab('contacts')"><span style="font-size:18px">👥</span>Contacts</button>
+    <button class="nav-btn" id="n-messages" onclick="showTab('messages')"><span style="font-size:18px">💬</span>Messages</button>
+    <button class="nav-btn" id="n-upgrade" onclick="showTab('upgrade')"><span style="font-size:18px">⭐</span>Upgrade</button>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsModal" style="display:none" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">Settings</span><button class="ibtn" onclick="closeSettings()">✕</button></div>
+    <div style="color:#444;font-size:10px;letter-spacing:2px;margin-bottom:6px">WAKE WORD</div>
+    <input class="inp" id="wakeInp" placeholder="hey v"/>
+    <div style="color:#2a2a2a;font-size:11px;margin-bottom:14px">Say this to activate the assistant</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <span style="color:#888;font-size:13px">Voice feedback</span>
+      <div class="toggle-wrap" id="voiceTog" onclick="toggleVoice()" style="background:#0d2e1f;border:1px solid #4fffb0">
+        <div class="toggle-knob" id="voiceKnob" style="background:#4fffb0;left:21px"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="color:#888;font-size:13px">Current plan: <strong style="color:#4fffb0" id="settingsPlan">Free</strong></span>
+    </div>
+    <button class="gbtn" style="width:100%" onclick="saveSettings()">Save Settings</button>
+    <button onclick="doLogout()" style="width:100%;margin-top:10px;background:none;border:1px solid #2a2a2a;border-radius:10px;padding:11px;color:#555;font-size:13px;cursor:pointer;font-family:'Outfit',sans-serif">🚪 Log Out</button>
+  </div>
+</div>
+
+<!-- PAY MODAL -->
+<div class="overlay" id="payModal" style="display:none" onclick="if(event.target===this)closePayModal()">
+  <div class="modal" id="payContent"></div>
+</div>
+
+<!-- FLW KEY MODAL -->
+<div class="overlay" id="flwModal" style="display:none" onclick="if(event.target===this)closeFlwModal()">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title">Flutterwave Key</span><button class="ibtn" onclick="closeFlwModal()">✕</button></div>
+    <div style="background:#0d1f17;border:1px solid #1a3326;border-radius:10px;padding:12px;margin-bottom:14px">
+      <div style="color:#4fffb0;font-size:12px;font-weight:700;margin-bottom:6px">How to get your key:</div>
+      <div style="color:#555;font-size:12px;line-height:1.7">1. Go to dashboard.flutterwave.com<br/>2. Settings → API Keys<br/>3. Copy your Public Key (starts with FLWPUBK)</div>
+    </div>
+    <input class="inp" id="flwInp" placeholder="FLWPUBK_TEST-..."/>
+    <button class="gbtn" style="width:100%" onclick="saveFlwKey()">Save Key</button>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="overlay" id="contactModal" style="display:none" onclick="if(event.target===this)closeContactModal()">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-title" id="contactModalTitle">Add Contact</span><button class="ibtn" onclick="closeContactModal()">✕</button></div>
+    <input class="inp" id="cName" placeholder="Name *"/>
+    <input class="inp" id="cPhone" placeholder="Phone with country code e.g. 27691238 *"/>
+    <label style="display:flex;align-items:center;gap:8px;color:#666;font-size:13px;margin:4px 0 16px;cursor:pointer">
+      <input type="checkbox" id="cWa" checked/> Has WhatsApp
+    </label>
+    <div style="display:flex;gap:8px">
+      <button class="gbtn" style="flex:1" onclick="saveContact()">Save</button>
+      <button class="ibtn" style="flex:1;width:auto;border-radius:10px;color:#555;font-size:13px" onclick="closeContactModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════ DATA ═══════════════════
+const SONGS=[{t:"Chill Vibes",a:"Lo-Fi Lab",f:220},{t:"Focus Mode",a:"Study Beats",f:264},{t:"Night Drive",a:"Synthwave Co",f:330},{t:"Morning Energy",a:"Boost FM",f:396},{t:"Deep Work",a:"Flow State",f:174}];
+const PLANS=[{n:"Free",p:0,tag:"FREE",c:"#555",perks:["3 contacts","Basic commands","In-app messages"]},{n:"Pro",p:14,tag:"$14/mo",c:"#4fffb0",perks:["Unlimited contacts","WhatsApp voice","Music control","Custom wake word","AI commands","Voice feedback"]},{n:"Elite",p:29,tag:"$29/mo",c:"#ffd166",perks:["Everything in Pro","Priority support","Early features","Multi-language"]}];
+
+// ═══════════════════ STATE ═══════════════════
+const DEF={contacts:[{id:1,n:"Mom",p:"1234567890",wa:true},{id:2,n:"Dad",p:"1234567891",wa:true},{id:3,n:"James",p:"1234567892",wa:true},{id:4,n:"Sarah",p:"1234567893",wa:false}],msgs:[],waMsgs:[],plan:"Free",wakeWord:"hey v",voiceFb:true,songIdx:0,playing:false,flwKey:"",log:[]};
+let S=JSON.parse(JSON.stringify(DEF));
+let micEnabled=false;
+let recRef=null;
+let pttRecRef=null;
+let callInt=null;
+let waveInt=null;
+const PR={v:"idle"};
+let actx=null;
+let oscNodes=[];
+let editIdx=null;
+let callSecs=0;
+
+// ═══════════════════ STORAGE ═══════════════════
+function save(){try{localStorage.setItem("heyv",JSON.stringify(S));}catch{}}
+function load(){try{const d=localStorage.getItem("heyv");if(d){const p=JSON.parse(d);S={...DEF,...p};}}catch{}}
+
+// ═══════════════════ AUDIO ═══════════════════
+function getCtx(){if(!actx)actx=new(window.AudioContext||window.webkitAudioContext)();return actx;}
+function beep(f,d,v){try{const c=getCtx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f||440;g.gain.setValueAtTime(0,c.currentTime);g.gain.linearRampToValueAtTime(v||0.3,c.currentTime+0.01);g.gain.linearRampToValueAtTime(0,c.currentTime+(d||0.15));o.start(c.currentTime);o.stop(c.currentTime+(d||0.15));}catch{}}
+function playSong(f){stopSong();try{const c=getCtx(),o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type="triangle";o.frequency.value=f;fl.type="lowpass";fl.frequency.value=900;g.gain.value=0.1;o.connect(fl);fl.connect(g);g.connect(c.destination);o.start();oscNodes=[o,g,fl];}catch{}}
+function stopSong(){oscNodes.forEach(n=>{try{n.disconnect();if(n.stop)n.stop();}catch{}});oscNodes=[];}
+function sndWake(){beep(660,0.08);setTimeout(()=>beep(880,0.1),110);}
+function sndOk(){[440,550    .hints{display:flex;flex-wrap:wrap;gap:6px}
     .hint{background:#141414;border:1px solid #1e1e1e;color:#2e2e2e;border-radius:99px;padding:5px 11px;font-size:10px;cursor:pointer}
     .call-card{background:#0d1a14;border:1px solid #1a3326;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
     .call-info{flex:1}
